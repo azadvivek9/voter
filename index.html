@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Identity Card Studio</title>
+    <style>
+        /* Global & Reset Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background-color: #f0f4f8;
+            color: #1e293b;
+            padding: 30px 15px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        /* Header styling */
+        .app-header {
+            text-align: center;
+            padding: 10px 0;
+        }
+        .app-header h2 {
+            color: #0f172a;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .app-header p {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Two Column Layout for Desktop */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        @media (min-width: 992px) {
+            .main-layout {
+                grid-template-columns: 1.1fr 0.9fr;
+                align-items: start;
+            }
+        }
+
+        /* Form Styling Card */
+        .form-section {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #475569;
+        }
+        input[type="text"], input[type="date"], textarea {
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #0f172a;
+            background-color: #f8fafc;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        input[type="text"]:focus, input[type="date"]:focus, textarea:focus {
+            border-color: #2563eb;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        
+        /* Custom Gender Radio Buttons */
+        .gender-radio-group {
+            display: flex;
+            gap: 15px;
+            padding: 10px 0;
+        }
+        .gender-radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* Custom file input styling */
+        input[type="file"] {
+            font-size: 13px;
+            color: #64748b;
+        }
+        input[type="file"]::-webkit-file-upload-button {
+            background: #cbd5e1;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #334155;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        input[type="file"]::-webkit-file-upload-button:hover {
+            background: #94a3b8;
+        }
+
+        /* Action Buttons Area */
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .print-btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        .print-btn:hover {
+            background-color: #1d4ed8;
+            box-shadow: 0 6px 8px -1px rgba(29, 78, 216, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Live Preview Container */
+        .preview-wrapper {
+            position: sticky;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            background: #edf5ff;
+            padding: 30px;
+            border-radius: 12px;
+            border: 5px solid #cbd5e1;
+        }
+
+        /* Card Absolute Dimensions */
+        .card {
+            width: 85.6mm;
+            height: 53.98mm;
+            position: relative;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            overflow: hidden;
+            background-color: #fff;
+            border-radius: 1px;
+            flex-shrink: 0;
+        }
+
+        #front-preview {
+            background-image: url('frontcard.jpg');
+        }
+
+        #back-preview {
+            background-image: url('backcard.jpg');
+        }
+
+        /* Front Card Blueprint Alignments */
+        .photo-slot {
+            position: absolute;
+            top: 20.5mm;
+            left: 3.39mm;
+            width: 20.6mm;
+            height: 28.2mm;
+            background-color: #e2e8f0;
+            background-size: cover;
+            background-position: center;
+            border: 0.2mm solid #cbd5e1;
+            background-image:url(imgvivek.jpg);
+            background-size: cover;
+        }
+        .photo-slot-mini {
+            position: absolute;
+            top: 14.5mm;
+            left: 73.2mm;
+            width: 6.9mm;
+            height: 8.9mm;
+            background-color: #e2e8f0;
+            background-position: center;
+            filter: saturate(1%);
+            background-image:url(imgvivek.jpg);
+            background-size: cover;
+        }
+        .front-info {
+            position: absolute;
+            top: 20mm;
+            left: 26mm;
+            width: 56mm;
+            font-size: 8.5pt;
+            line-height: 1.2;
+            color: #000;
+        }
+        .info-block {
+            margin-bottom: 3px;
+        }
+        .english-text {
+            display: block;
+            font-size: 6.5pt;
+            font-weight: 650;
+            font-family: 'Arial', Times, serif;
+            line-height: 1.4;
+        }
+        .light-text {
+            display: block;
+            font-size: 6.5pt;
+            font-family: 'Arial', Times, serif;
+            line-height: 1.4;
+        }
+        .card-number {
+            position: absolute;
+            top: 43mm;
+            bottom: 6mm;
+            width: 100%;
+            text-align: center;
+            font-size: 12pt;
+            font-weight: 600;
+            letter-spacing: 0.02mm;
+            color: #000;
+            transform: scaleY(1.02);
+        }
+        .issue-date {
+            position: absolute;
+            left: 4.7mm;
+            top: 15.5mm;
+            transform-origin: left top;
+            font-size: 8pt;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .footer-imr {
+            position: absolute;
+            left: 7mm;
+            top: 42mm;
+            transform-origin: left top;
+            font-size: 7.5pt;
+            font-weight: 650;
+            white-space: nowrap;
+        }
+        .issue-date-mini {
+            position: absolute;
+            left: 80mm;
+            top: 22.5mm;
+            transform-origin: left top;
+            font-size: 3.5pt;
+            white-space: nowrap;
+            rotate: -90deg;
+            font-weight: 400;
+        }
+        .header-hindi {
+            position: absolute;
+            left: 28mm;
+            top: 4.2mm;
+            transform-origin: left top;
+            font-size: 7.7pt;
+            font-weight: 800;
+        }
+        .header-english {
+            position: absolute;
+            left: 17mm;
+            top: 8.5mm;
+            transform-origin: left top;
+            font-size: 8.3pt;
+            font-weight: 600;
+            font-family: 'Arial', Helvetica, sans-serif;
+        }
+        .footer {
+            position: absolute;
+            left: 12mm;
+            top: 49.7mm;
+            transform-origin: left top;
+            font-size: 7pt;
+            font-weight: 500;
+        }
+
+        /* Back Card Blueprint Alignments */
+        .back-info {
+            position: absolute;
+            top: 3mm;
+            left: 32mm;
+            width: 48mm;
+            color: #000;
+            font-size: 5.8pt;
+            line-height: 1.5;
+        }
+        .qrslot {
+            position: absolute;
+            top: 16.5mm;
+            left: 5.6mm;
+            width: 20.5mm;
+            height: 20.5mm;
+            background-color: #f3f3f3;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qrslot canvas, .qrslot img {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+
+        /* Print Media Target Optimization */
+        @media print {
+            @page {
+                size: A4 portrait;
+            }
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .form-section, .actions, .app-header, .section-title {
+                display: none !important;
+            }
+            .preview-wrapper {
+                position: static;
+            }
+            .preview-section {
+                background: transparent !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                display: flex !important;
+                flex-direction: row !important;
+                justify-content: flex-start !important;
+                gap: 0mm !important; 
+                width: 100% !important;
+            }
+            .card {
+                box-shadow: none !important;
+                page-break-inside: avoid;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="app-header">
+        <h2>Voter Card Generator</h2>
+        <p>Enter details below to generate and layout the print sheet automatically.</p>
+    </header>
+
+    <div class="main-layout">
+        <div class="form-section">
+            <h3 class="section-title">Identity Credentials & Assets</h3>
+            <div class="form-grid">
+                <div class="form-group full-width ">
+                    <label for="in-photo">Profile Photo</label>
+                    <input type="file" id="in-photo" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label for="in-name-en">Name (English)</label>
+                    <input style="text-transform: capitalize;" type="text" id="in-name-en" placeholder="Enter full name" value="Badal Kumar">
+                </div>
+                <div class="form-group">
+                    <label for="in-name-hi">Name (Hindi) <span style="font-size:10px;color:#2563eb;">[Type English & Press Space]</span></label>
+                    <input type="text" id="in-name-hi" placeholder="Type in english..." value="बादल कुमार">
+                </div>
+                <div class="form-group">
+                    <label for="in-fname-en">Father's Name (English)</label>
+                    <input style="text-transform: capitalize;" type="text" id="in-fname-en" placeholder="Father's name" value="Surendra Paswan">
+                </div>
+                <div class="form-group">
+                    <label for="in-fname-hi">Father's Name (Hindi) <span style="font-size:10px;color:#2563eb;">[Type English & Press Space]</span></label>
+                    <input type="text" id="in-fname-hi" placeholder="Type in english..." value="सुरेन्द्र पासवान">
+                </div>
+                <div class="form-group">
+                    <label for="in-dob">DOB (DD-MM-YYYY)</label>
+                    <input type="date" id="in-dob" value="2009-06-05">
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <div class="gender-radio-group">
+                        <label><input type="radio" name="gender" value="पुरुष / MALE" checked> Male</label>
+                        <label><input type="radio" name="gender" value="महिला / FEMALE"> Female</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="in-imr-no">IMR / Number</label>
+                    <input type="text" id="in-imr-no" placeholder="IMR1763861" value="IMR1763861">
+                </div>
+                <div class="form-group">
+                    <label for="in-download">Download Date</label>
+                    <input type="date" id="in-download">
+                </div>
+                
+
+                <div class="form-group full-width">
+                    <label for="in-address-en">Address (English) - Auto Capital</label>
+                    <textarea id="in-address-en" rows="2" placeholder="Address: S/O: ...">S/O: SURENDRA PASWAN, WARD NO.02, SAKRAULI, PO: AJIJPUR CHANDE, DIST: VAISHALI, BIHAR - 843110</textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label for="in-address-hi">Address (Hindi) <span style="font-size:10px;color:#2563eb;">[Type English words & Press Space]</span></label>
+                    <textarea id="in-address-hi" rows="2" placeholder="Type English here to convert to Hindi...">आत्मज: सुरेन्द्र पासवान, वार्ड न.02, सक्रौली, अजीजपुर चांदे, वैशाली, बिहार - 843110</textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label for="in-const">Constituency Details<span style="font-size:10px;color:#2563eb;">[Type English & Press Space]</span></label>
+                    <textarea id="in-const" rows="2" placeholder="Constituency: ...">निर्वाचक निबंधन पदाधिकारी, 130 - पातेपुर (अ.जा.) Electoral Registration Officer, 130 - Patepur (SC)</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-wrapper">
+            <div class="preview-section">
+                <div class="card" id="front-preview">
+                    <div class="header-hindi">भारत निर्वाचन आयोग</div>
+                    <div class="header-english">ELECTION COMMISSION OF INDIA</div>
+
+                    <div class="issue-date" id="lbl-issue-top">IMR1763861</div>
+                    <div class="issue-date-mini" id="lbl-issue-mini">IMR1763861</div>
+                    <div class="photo-slot" id="photo-display"></div>
+                    <div class="photo-slot-mini" id="photo-display-mini"></div>
+
+                    <div class="front-info">
+                        <div class="info-block">
+                            <span class="english-text">नाम: <span id="lbl-name-hi">बादल कुमार</span></span>
+                            <span style="text-transform: capitalize;" class="english-text">Name: <span id="lbl-name-en">Badal Kumar</span></span>
+                            <span class="english-text">पिता का नाम: <span id="lbl-fname-hi">सुरेन्द्र पासवान</span></span>
+                            <span style="text-transform: capitalize;" class="english-text">Father's Name: <span  id="lbl-fname-en">Surendra Paswan</span></span>
+                            <span class="light-text">लिंग / Gender: <span id="lbl-gender">पुरुष / MALE</span></span>
+                            <span class="light-text">जन्म तिथि / Date of Birth: <span id="lbl-dob">05-06-2009</span></span>
+                        </div>
+                    </div>
+                    <div class="footer">e-Electors Photo Identity Card - ई-मतदाता पहचान पत्र</div>
+                </div>
+
+                <div class="card" id="back-preview">
+                    <div class="qrslot" id="qrdisplay"></div>
+                    <div class="back-info">
+                        <p style="font-weight: 700; font-family: 'Arial', Times, serif;">पता :<span id="lbl-address-hi">आत्मज: सुरेन्द्र पासवान, वार्ड न.02, सक्रौली, अजीजपुर चांदे, वैशाली, बिहार - 843110</span></p>
+                        <p style="font-weight: 700; font-family: 'Arial', Times, serif; margin-top: 2mm;">Address:<span id="lbl-address-en">S/O: SURENDRA PASWAN, WARD NO.02, SAKRAULI, PO: AJIJPUR CHANDE, DIST: VAISHALI, BIHAR - 843110</span></p>
+                        <p style="font-weight: 700; font-family: 'Arial', Times, serif; margin-top: 2mm;"><span id="lbl-const">निर्वाचक निबंधन पदाधिकारी, 130 - पातेपुर (अ.जा.) Electoral Registration Officer, 130 - Patepur (SC)</span></p>
+                        <p style="font-weight: 700; font-family: 'Arial', Times, serif; margin-top: 2mm;">Download Date:<span id="lbl-download">02-06-2026</span></p>
+                    </div>
+                    <div class="footer-imr" id="lbl-issue-back">IMR1763861</div>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="print-btn" id="generateQrBtn" style="margin-bottom:10px;">Generate QR</button>
+            </div>
+            <div class="actions">
+                <button class="print-btn" onclick="window.print()">Print Both Sides Card. </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+ 
+
+document.getElementById("generateQrBtn").addEventListener("click", function () {
+
+    const nameEn = document.getElementById("in-name-en").value.trim();
+    const fnameEn = document.getElementById("in-fname-en").value.trim();
+    const dob = document.getElementById("in-dob").value.trim();
+    const gender = document.querySelector('input[name="gender"]:checked').value.trim();
+    const imrNo = document.getElementById("in-imr-no").value.trim();
+    const address = document.getElementById("in-address-en").value.trim();
+
+    const qrText =
+        `${nameEn} ${fnameEn} ${dob} ${gender} ${imrNo} ${address}`;
+
+    const qrUrl =
+        `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrText)}`;
+
+    document.getElementById("qrdisplay").style.backgroundImage =
+        `url('${qrUrl}')`;
+
+    document.getElementById("qrdisplay").style.backgroundSize = "cover";
+    document.getElementById("qrdisplay").style.backgroundPosition = "center";
+});
+    // Helper to format YYYY-MM-DD to DD-MM-YYYY
+    function formatToIndianDate(dateString) {
+        if(!dateString) return '';
+        const parts = dateString.split('-');
+        if(parts.length === 3) {
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        return dateString;
+    }
+
+    // 2. STABLE REAL-TIME TRANSLITERATION (English to Hindi API Fetch)
+    async function transliterateWord(word) {
+        if (!word.trim()) return '';
+        try {
+            const response = await fetch(`https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=hi-t-i0-und&num=1`);
+            const data = await response.json();
+            if (data && data[0] === 'SUCCESS') {
+                return data[1][0][1][0] || word;
+            }
+        } catch (e) {
+            console.error("Transliteration Error", e);
+        }
+        return word;
+    }
+
+    function setupTransliteration(inputId, targetId) {
+        const inputEl = document.getElementById(inputId);
+        if (!inputEl) return;
+
+        inputEl.addEventListener('keydown', async (e) => {
+            if (e.key === ' ' || e.key === 'Enter' || e.key === ',') {
+                const text = inputEl.value;
+                const words = text.split(/\s+/);
+                const lastWord = words[words.length - 1];
+
+                if (lastWord && !/[\u0900-\u097F]/.test(lastWord)) {
+                    const translated = await transliterateWord(lastWord);
+                    words[words.length - 1] = translated;
+                    inputEl.value = words.join(' ') + (e.key === ' ' ? ' ' : '');
+                    
+                    document.getElementById(targetId).innerText = inputEl.value;
+                    regenerateAutomaticQR();
+                }
+            }
+        });
+
+        inputEl.addEventListener('input', () => {
+            document.getElementById(targetId).innerText = inputEl.value;
+            regenerateAutomaticQR();
+        });
+    }
+
+    // Initialize Transliteration handlers
+    setupTransliteration('in-name-hi', 'lbl-name-hi');
+    setupTransliteration('in-fname-hi', 'lbl-fname-hi');
+    setupTransliteration('in-address-hi', 'lbl-address-hi');
+
+    // 3. SYNCHRONIZE REGULAR FORM INPUT UPDATES
+    const regularInputs = [
+        { id: 'in-name-en', targetIds: ['lbl-name-en'] },
+        { id: 'in-fname-en', targetIds: ['lbl-fname-en'] },
+        { id: 'in-imr-no', targetIds: ['lbl-issue-top', 'lbl-issue-mini', 'lbl-issue-back'] },
+        { id: 'in-const', targetIds: ['lbl-const'] }
+    ];
+
+    regularInputs.forEach(item => {
+        const inputEl = document.getElementById(item.id);
+        if(inputEl) {
+            inputEl.addEventListener('input', () => {
+                item.targetIds.forEach(targetId => {
+                    const targetEl = document.getElementById(targetId);
+                    if(targetEl) targetEl.innerText = inputEl.value;
+                });
+                regenerateAutomaticQR();
+            });
+        }
+    });
+
+    // 4. FORCE ENGLISH ADDRESS TO CAPITAL
+    const addressEnInput = document.getElementById('in-address-en');
+    if(addressEnInput) {
+        addressEnInput.addEventListener('input', () => {
+            addressEnInput.value = addressEnInput.value.toUpperCase();
+            const lblAddressEn = document.getElementById('lbl-address-en');
+            if(lblAddressEn) lblAddressEn.innerText = addressEnInput.value;
+            regenerateAutomaticQR();
+        });
+    }
+
+    // 5. NATIVE DATE PICKERS SYNC
+    const dobInput = document.getElementById('in-dob');
+    if(dobInput) {
+        dobInput.addEventListener('change', () => {
+            const lblDob = document.getElementById('lbl-dob');
+            if(lblDob) lblDob.innerText = formatToIndianDate(dobInput.value);
+            regenerateAutomaticQR();
+        });
+    }
+
+    const downloadInput = document.getElementById('in-download');
+    if(downloadInput) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        downloadInput.value = `${yyyy}-${mm}-${dd}`;
+        
+        const lblDownload = document.getElementById('lbl-download');
+        if(lblDownload) lblDownload.innerText = `${dd}-${mm}-${yyyy}`;
+
+        downloadInput.addEventListener('change', () => {
+            if(lblDownload) lblDownload.innerText = formatToIndianDate(downloadInput.value);
+            regenerateAutomaticQR();
+        });
+    }
+
+    // 6. GENDER RADIO CONTROL SWITCHER
+    const genderRadios = document.querySelectorAll('input[name="gender"]');
+    genderRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            const lblGender = document.getElementById('lbl-gender');
+            if(lblGender) lblGender.innerText = radio.value;
+            regenerateAutomaticQR();
+        });
+    });
+
+    // 7. PROFILE PHOTO LOADER
+    const photoInput = document.getElementById('in-photo');
+    if(photoInput) {
+        photoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.addEventListener('load', function() {
+                    document.getElementById('photo-display').style.backgroundImage = `url(${this.result})`;
+                    document.getElementById('photo-display-mini').style.backgroundImage = `url(${this.result})`;
+                });
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    const qrInput = document.getElementById('in-qr');
+    if(qrInput) {
+        qrInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.addEventListener('load', function() {
+                    document.getElementById('qrdisplay').style.backgroundImage = `url(${this.result})`;
+                });
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Initial boot load to render the default layout immediately
+    window.addEventListener('DOMContentLoaded', () => {
+        regenerateAutomaticQR();
+    });
+</script>
+
+</body>
+</html>
